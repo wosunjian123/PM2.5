@@ -2,10 +2,9 @@ import os
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-plt.rcParams['font.sans-serif'] = ['SimHei']  # 解决中文显示问题
+plt.rcParams['font.sans-serif'] = ['SimHei']  
 plt.rcParams['axes.unicode_minus'] = False
 
-# 1. 定义路径与城市监测点字典（关键：明确每个城市的本土监测点列名）
 script_dir = os.path.dirname(os.path.abspath(__file__))
 file_path_dic = {
     "Beijing": os.path.join(script_dir, "PM2.5data", "BeijingPM20100101_20151231.csv"),
@@ -15,7 +14,6 @@ file_path_dic = {
     "Shenyang": os.path.join(script_dir, "PM2.5data", "ShenyangPM20100101_20151231.csv")
 }
 
-# 定义各城市的“中国环保部监测点列名”（核心：后续计算本土平均需依赖此字典）
 city_china_monitors = {
     "Beijing": ["PM_Dongsi", "PM_Dongsihuan", "PM_Nongzhanguan"],
     "Shanghai": ["PM_Jingan", "PM_Xuhui"],
@@ -23,7 +21,8 @@ city_china_monitors = {
     "Guangzhou": ["PM_City Station", "PM_5th Middle School"],
     "Shenyang": ["PM_Taiyuanjie", "PM_Xiaoheyan"]
 }
-us_col = "PM_US Post"  # 美国大使馆列名（所有城市统一）
+us_col = "PM_US Post"  
+
 
 # 2. 加载所有城市数据（批量处理，避免重复代码）
 city_dfs = {}  # 存储所有城市原始数据
