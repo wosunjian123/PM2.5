@@ -136,7 +136,7 @@ save_path = os.path.join(result_dir, "2014&2015_five_cities.png")
 plt.tight_layout()
 plt.subplots_adjust(hspace=0.3)
 plt.savefig(save_path, dpi=300, bbox_inches='tight')  # dpi=300：高清图片；bbox_inches='tight'：避免标签被截断
-plt.show()
+#plt.show()
 
 # 7. 计算并打印占比
 city_level_ratio = {}
@@ -175,14 +175,20 @@ for city in city_dfs.keys():
     
     city_station_monthly[city] = station_monthly
 
-# 9. 可视化：每个城市各观测点的月度均值折线图（按城市分子图）
+# 9. 可视化：每个城市各观测点的月度均值折线图（添加污染级别横线并统一纵轴）
 # 创建2行3列的子图（5个城市 + 1个空图）
 fig, axes = plt.subplots(2, 3, figsize=(18, 10))
 axes = axes.flatten()  # 转换为一维数组，便于索引
 
-# 定义折线颜色和标记，区分不同观测点
-colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FECA57']
+# 定义折线颜色（使用颜色名称）和标记，区分不同观测点
+colors = ['red', 'blue', 'green', 'cyan', 'magenta']
 markers = ['o', 's', '^', 'D', 'p']
+
+# 定义污染级别横线的颜色（对应pm_bins的区间划分）
+bin_line_colors = ['green', 'yellow', 'orange', 'red', 'purple', 'maroon']
+
+# 统一纵轴最大刻度（根据pm_bins和数据分布设置为300）
+y_max = 300
 
 for i, city in enumerate(city_station_monthly.keys()):
     ax = axes[i]
@@ -202,21 +208,44 @@ for i, city in enumerate(city_station_monthly.keys()):
             linewidth=1.5
         )
     
+    # 添加污染级别横线（pm_bins）
+    for bin_val, color in zip(pm_bins[:-1], bin_line_colors):  # 排除最后一个inf
+        ax.axhline(
+            y=bin_val, 
+            color=color, 
+            linestyle='--', 
+            alpha=0.6,  # 半透明避免遮挡折线
+            linewidth=1.2
+        )
+        # 在右侧标注横线对应的污染级别值
+        ax.text(
+            1.01, bin_val, f'{bin_val}', 
+            transform=ax.get_yaxis_transform(),  # 按y轴比例定位
+            verticalalignment='center', 
+            fontsize=8, 
+            color=color
+        )
+    
+    # 统一设置纵轴尺度
+    ax.set_ylim(0, y_max)
+    
     # 设置子图标题和标签
     ax.set_title(f'{city}各观测点PM2.5月度均值', fontsize=12)
     ax.set_xlabel('日期', fontsize=10)
-    ax.set_ylabel('PM2.5浓度（μg/m³）', fontsize=10)
+    ax.set_ylabel('PM2.5浓度（μg/m$^{3}$）', fontsize=10)
     ax.legend(fontsize=8)
     ax.grid(alpha=0.3)
     # 旋转x轴标签，避免重叠
     plt.setp(ax.xaxis.get_majorticklabels(), rotation=45, ha='right', fontsize=8)
 
-# 隐藏最后一个空图（2行3列共6个子图，只需要5个）
+# 隐藏最后一个空图
 axes[-1].axis('off')
 
 # 调整布局
 plt.tight_layout()
 # 保存图片到result目录
-save_path = os.path.join(result_dir, "各城市观测点月度均值对比.png")
+save_path = os.path.join(result_dir, "各城市观测点月度均值带污染级别线.png")
 plt.savefig(save_path, dpi=300, bbox_inches='tight')
+plt.show()
+    
 plt.show()
